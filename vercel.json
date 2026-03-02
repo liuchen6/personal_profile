@@ -2,7 +2,7 @@
     "version": 2,
     "builds": [
         {
-            "src": "index.html",
+            "src": "个人人才画像.html",
             "use": "@vercel/static"
         }
     ],
@@ -14,3 +14,4 @@
     ]
 
 }
+
