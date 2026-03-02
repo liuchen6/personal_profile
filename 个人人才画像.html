@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>双非应届生专属「个人人才画像」梳理工具 | 画像为根 落地为果</title>
+    <script src="https://cdn.jsdelivr.net/npm/docxtemplater@3.37.11/build/docxtemplater.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pizzip@3.1.4/dist/pizzip.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pizzip@3.1.4/dist/pizzip-utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.1.0/jszip-utils.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+        body {
+            background-color: #f7f8fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 10px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        /* 核心标题突出「人才画像」 */
+        h1 {
+            color: #2f54eb;
+            font-size: 20px;
+            font-weight: 700;
+            margin: 15px 0;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e6e8eb;
+        }
+        h1 span {
+            color: #faad14;
+            font-weight: 700;
+        }
+        h2 {
+            color: #1d2129;
+            font-size: 17px;
+            font-weight: 600;
+            margin: 15px 0 10px;
+            padding-left: 8px;
+            border-left: 3px solid #2f54eb;
+        }
+        h3 {
+            color: #4e5969;
+            font-size: 15px;
+            font-weight: 600;
+            margin: 12px 0 8px;
+        }
+        /* 画像核心模块标注 */
+        .portrait-tag {
+            display: inline-block;
+            background: #e8f4f8;
+            color: #2f54eb;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .progress {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 10px 0 20px;
+            align-items: center;
+        }
+        .progress-item {
+            flex: 1;
+            min-width: 80px;
+            text-align: center;
+            padding: 8px 0;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #86909c;
+            background: #f0f2f5;
+        }
+        .progress-item.active {
+            background: #2f54eb;
+            color: #fff;
+            font-weight: 600;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #e6e8eb;
+            border-radius: 4px;
+            font-size: 14px;
+            outline: none;
+        }
+        input:focus, textarea:focus, select:focus {
+            border-color: #2f54eb;
+            box-shadow: 0 0 0 2px rgba(47, 84, 235, 0.1);
+        }
+        textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+        /* 认知引导提示（轻量，不深度思考） */
+        .guide-light {
+            background: #f0f8fb;
+            border-left: 4px solid #69b1ff;
+            padding: 8px;
+            margin: 8px 0;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #2f54eb;
+        }
+        /* 新增：双非学生专属暖心提示 */
+        .guide-double-non {
+            background: #fef7fb;
+            border-left: 4px solid #eb2f96;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #852747;
+        }
+        .tip-success {
+            background: #e8f4f8;
+            border-left: 4px solid #52c41a;
+            padding: 8px;
+            margin: 8px 0;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .tip-warning {
+            background: #fff7e6;
+            border-left: 4px solid #faad14;
+            padding: 8px;
+            margin: 8px 0;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn-next {
+            background: #2f54eb;
+            color: #fff;
+        }
+        .btn-next:hover {
+            background: #1d39c4;
+        }
+        .btn-generate {
+            background: #faad14;
+            color: #fff;
+            margin: 5px 0;
+        }
+        .btn-generate:hover {
+            background: #d48806;
+        }
+        /* 区分画像导出和简历导出按钮 */
+        .btn-portrait {
+            background: #2f54eb;
+            color: #fff;
+            font-size: 16px;
+            padding: 15px;
+        }
+        .btn-portrait:hover {
+            background: #1d39c4;
+        }
+        .btn-resume {
+            background: #52c41a;
+            color: #fff;
+            font-size: 16px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .btn-resume:hover {
+            background: #389e0d;
+        }
+        .table-container {
+            overflow-x: auto;
+            margin: 8px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        table th, table td {
+            border: 1px solid #e6e8eb;
+            padding: 6px;
+            text-align: left;
+        }
+        table th {
+            background: #f0f2f5;
+            white-space: nowrap;
+        }
+        .step {
+            display: none;
+        }
+        .step.active {
+            display: block;
+        }
+        .fill-group {
+            background: #f7f8fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 8px 0;
+        }
+        .invalid-tip {
+            color: #f5222d;
+            font-size: 12px;
+            margin-top: -5px;
+            display: none;
+        }
+        /* 画像预览模块（核心成果） */
+        .portrait-preview {
+            background: #fff;
+            border: 2px solid #e8f4f8;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            line-height: 1.8; /* 优化预览可读性 */
+        }
+        .portrait-preview h4 {
+            color: #2f54eb;
+            font-size: 16px;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed #e6e8eb;
+            padding-bottom: 5px;
+        }
+        /* 新增：经历填写提示 */
+        .exp-tip {
+            font-size: 12px;
+            color: #86909c;
+            margin: 5px 0;
+        }
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 18px;
+            }
+            h2 {
+                font-size: 16px;
+            }
+            .progress-item {
+                font-size: 11px;
+                padding: 6px 0;
+            }
+            .btn {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 标题突出「人才画像」核心，简历为落地产物 -->
+    <h1>双非应届生专属<span>个人人才画像</span>梳理工具<br>「画像为根 · 求职落地为果」</h1>
+    <div class="card">
+        <p style="text-align: center; color: #4e5969; font-size: 13px;">✅ 懒人式梳理自我 ✅ 提炼专属人才画像 ✅ 画像多场景求职落地（简历/面试/网申）</p>
+        <p style="text-align: center; color: #2f54eb; font-size: 13px; margin-top: 5px;"><strong>核心目标：帮你认清自己，找到专属求职标签！</strong></p>
+        <!-- 新增：双非学生专属暖心提示 -->
+        <div class="guide-double-non">
+            💛 双非不是短板！你的踏实、抗压力、高性价比，都是企业看重的核心优势，找到自己的闪光点就赢了～
+        </div>
+        <!-- 新增：保存/恢复进度按钮 -->
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button class="btn" style="flex: 1; background: #52c41a; color: white; font-size: 13px; padding: 8px;" onclick="saveProgress()">💾 保存进度</button>
+            <button class="btn" style="flex: 1; background: #1890ff; color: white; font-size: 13px; padding: 8px;" onclick="loadProgress()">🔄 恢复进度</button>
+            <button class="btn" style="flex: 1; background: #f5222d; color: white; font-size: 13px; padding: 8px;" onclick="clearProgress()">🗑️ 清除进度</button>
+        </div>
+    </div>
+
+    <!-- 进度条完全围绕「人才画像」梳理，简历为最后落地环节 -->
+    <div class="progress">
+        <div class="progress-item active" data-step="1">1. 核心画像定位</div>
+        <div class="progress-item" data-step="2">2. 能力-经历画像匹配</div>
+        <div class="progress-item" data-step="3">3. 画像多场景落地</div>
+        <div class="progress-item" data-step="4">4. 画像导出+简历生成</div>
+    </div>
+
+    <!-- 第一步：核心画像定位（核心：自我求职定位+标签提炼，非单纯填基础信息） -->
+    <div class="step active" id="step1">
+        <div class="card">
+            <h2>🔹 第一步：核心画像定位 <span class="portrait-tag">画像核心</span></h2>
+            <p style="font-size: 14px; color: #4e5969; margin-bottom: 10px;">1分钟找准你的「求职定位+核心标签」，让HR一眼记住你</p>
+
+            <h3>基础认知：我的求职基本盘</h3>
+            <div class="guide-light">
+                💡 轻量思考：先明确自己的求职基本信息，这是画像的基础，不用复杂思考
+            </div>
+            <input type="text" id="name" placeholder="你的姓名（如：李飞）">
+            <input type="text" id="school" placeholder="你的学校（如实填写，双非不是短板）">
+            <input type="text" id="major" placeholder="你的专业（如：计算机科学与技术）">
+            <input type="text" id="targetJob" placeholder="我的求职方向（如：python开发/电商运营助理）">
+
+            <h3>核心认知1：我的求职动机 <span class="portrait-tag">画像核心维度</span></h3>
+            <div class="guide-light">
+                💡 轻量思考：你为什么想做这个岗位？不用高大上，真实表达即可，这是企业判断你匹配度的关键
+            </div>
+            <!-- 修改1：扩充求职动机选项到12个+自定义，贴合双非学生真实诉求 -->
+            <select id="motivationSelect" onchange="syncCustom('motivationSelect', 'motivationCustom')">
+                <option value="">↓ 选一个贴合你的（真实就好） ↓</option>
+                <option value="专业对口，想把课堂学的基础知识用到实际工作中，边做边学">专业对口，想把课堂基础用到工作，边做边学</option>
+                <option value="看好这个岗位的发展，想从应届生阶段打好基础，长期深耕这个领域">看好岗位发展，想长期深耕，从基础做起</option>
+                <option value="性格/做事风格贴合这个岗位，比如细心适合做运营/有耐心适合做开发">性格/风格贴合岗位，想发挥自己的做事优势</option>
+                <option value="想通过这个岗位积累社会经验，提升自己的职场通用能力">想积累职场经验，提升自己的通用能力</option>
+                <option value="认可贵行业的发展前景，想从基础岗位切入，逐步提升自己的行业认知">认可行业前景，想从基础切入积累行业认知</option>
+                <option value="作为双非学生，想通过踏实做事证明自己的潜力，不逊色于名校生">想证明双非生的潜力，用踏实赢认可</option>
+                <option value="看重企业的应届生培养体系，愿意跟着公司的节奏稳步成长">看重企业培养体系，想跟着公司稳步成长</option>
+                <option value="对这个岗位的具体工作内容感兴趣（如写代码/做数据/和人沟通），想深耕这个方向">对岗位工作内容感兴趣，想深耕这个方向</option>
+                <option value="希望通过这份工作解决实际问题，获得成就感，而不只是为了薪资">想解决实际问题，追求工作成就感</option>
+                <option value="想在一线城市/目标城市立足，这份岗位是我职业起步的合适选择">想在目标城市立足，岗位是合适的起步</option>
+                <option value="家人/学长学姐在相关领域有经验，受其影响想进入这个岗位发展">受身边人影响，想进入相关领域发展</option>
+                <option value="在校期间做过相关的小项目/兼职，想把这些零散经验系统化，落地到正式工作中">想把零散经验系统化，落地到正式工作</option>
+                <option value="自定义">我想真实表达自己的想法</option>
+            </select>
+            <!-- 修复：确保自定义输入框初始可触发，且样式优化 -->
+            <input type="text" id="motivationCustom" placeholder="比如：我喜欢敲代码，想做Python开发，踏实积累技术经验" style="display: none;">
+            <div class="invalid-tip" id="motivationTip">❌ 别写“为了找工作”这种无意义表述，真实表达你的想法就好</div>
+
+            <h3>核心认知2：我的3个核心能力 <span class="portrait-tag">画像核心维度</span></h3>
+            <div class="guide-light">
+                💡 轻量思考：选3个你真正拥有的能力（不是别人的，是自己的），不能重复，这是你的核心竞争力
+            </div>
+            <!-- 能力库扩充，分「岗位硬能力」「通用软能力」，贴合自我认知 -->
+            <!-- 修改2：修复自定义能力文本框触发逻辑，确保选自定义必显示 -->
+            <select id="ability1" onchange="syncCustom('ability1', 'ability1Custom'); checkAbilityRepeat()">
+                <option value="">能力1（岗位相关硬能力，如代码/数据）</option>
+                <option value="代码编写">代码编写</option>
+                <option value="基础测试">基础测试</option>
+                <option value="数据整理/分析">数据整理/分析</option>
+                <option value="Excel高级函数">Excel高级函数</option>
+                <option value="文案撰写">文案撰写</option>
+                <option value="活动执行">活动执行</option>
+                <option value="自定义">我有其他硬能力</option>
+            </select>
+            <input type="text" id="ability1Custom" placeholder="比如：PS基础/小程序搭建基础" style="display: none;">
+            
+            <select id="ability2" onchange="syncCustom('ability2', 'ability2Custom'); checkAbilityRepeat()">
+                <option value="">能力2（通用软能力，如学习/细心）</option>
+                <option value="快速学习">快速学习</option>
+                <option value="认真细致">认真细致</option>
+                <option value="责任心强">责任心强</option>
+                <option value="抗压能力">抗压能力</option>
+                <option value="主动思考">主动思考</option>
+                <option value="团队配合">团队配合</option>
+                <option value="自定义">我有其他软能力</option>
+            </select>
+            <input type="text" id="ability2Custom" placeholder="比如：耐心沟通/高效执行" style="display: none;">
+            
+            <select id="ability3" onchange="syncCustom('ability3', 'ability3Custom'); checkAbilityRepeat()">
+                <option value="">能力3（通用软能力，补充你的优势）</option>
+                <option value="快速学习">快速学习</option>
+                <option value="认真细致">认真细致</option>
+                <option value="责任心强">责任心强</option>
+                <option value="抗压能力">抗压能力</option>
+                <option value="主动思考">主动思考</option>
+                <option value="团队配合">团队配合</option>
+                <option value="自定义">我有其他软能力</option>
+            </select>
+            <input type="text" id="ability3Custom" placeholder="比如：耐心沟通/高效执行" style="display: none;">
+            <div class="invalid-tip" id="abilityTip">❌ 3个能力不能重复哦，选真正属于你自己的</div>
+
+            <h3>我的专属人才标签 <span class="portrait-tag">画像核心成果</span></h3>
+            <div class="guide-light">
+                💡 轻量思考：这是你的「个人求职名片」，基于你的基本盘+动机+能力生成，让HR一眼记住你
+            </div>
+            <button class="btn btn-generate" onclick="generateTagSummary()">🔘 一键生成我的专属人才标签</button>
+            <textarea id="tagSummary" placeholder="你的专属人才标签会显示在这里，可根据自己的真实情况微调"></textarea>
+            <div class="invalid-tip" id="tagTip">❌ 别写“我没什么优点”，你一定有属于自己的优势，只是还没发现</div>
+
+            <button class="btn btn-next" onclick="checkStep1()">完成核心画像定位 → 下一步</button>
+        </div>
+    </div>
+
+    <!-- 第二步：能力-经历画像匹配（核心：用真实经历佐证能力，让画像有支撑，非单纯填经历） -->
+    <div class="step" id="step2">
+        <div class="card">
+            <h2>🔹 第二步：能力-经历画像匹配 <span class="portrait-tag">画像落地支撑</span></h2>
+            <p style="font-size: 14px; color: #4e5969; margin-bottom: 10px;">用你的真实经历佐证能力，让你的人才画像“有血有肉”，不是空标签</p>
+            <div class="guide-light">
+                💡 轻量思考：不用记复杂公式，不用深度思考，只要写出“什么场景+做了什么”，就能佐证你的能力；没经历也没关系，系统会帮你梳理基础能力
+            </div>
+            <!-- 修改3：新增经历填写提示，明确允许1-3个经历 -->
+            <div class="exp-tip">✨ 温馨提示：至少填写1个经历即可，不用强迫自己填满3个，真实比数量更重要！</div>
+
+            <!-- 新增：添加经历按钮 -->
+            <button class="btn" style="background: #52c41a; color: white; margin-bottom: 15px;" onclick="addExpGroup()">➕ 添加经历</button>
+
+            <!-- 每个能力对应一个经历，核心是「能力-经历匹配」，让画像有支撑 -->
+            <div class="fill-group" id="exp1Group">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>能力1佐证：我的<span id="a1Text">核心能力1</span>，体现在这些事上</h3>
+                    <button type="button" onclick="removeExpGroup('exp1')" style="background: #f5222d; color: white; border: none; border-radius: 4px; padding: 4px 8px; font-size: 12px; cursor: pointer;">删除</button>
+                </div>
+                <select id="exp1Type" onchange="toggleExpInput('exp1')">
+                    <option value="有经历">我有真实经历佐证这个能力</option>
+                    <option value="无经历">我暂时没相关经历（系统帮我梳理基础能力）</option>
+                </select>
+                <input type="text" id="exp1Scene" placeholder="场景（如：Python课程设计/班级数据统计/市场营销策划/会计实习/机械设计项目）">
+                <input type="text" id="exp1Action" placeholder="做了什么（如：自学框架写代码/整理班级考勤数据/策划校园活动/参与财务报表编制/设计机械零件）">
+                <input type="text" id="exp1Result" placeholder="小结果（如：完成基础功能/数据零错误/活动参与人数超预期/报表审核通过/零件设计符合要求）">
+                <div class="tip-success" id="exp1Auto" style="display: none;">
+                    ✨ 你的能力基础：在校期间通过课程学习掌握了<span id="a1Auto">核心能力1</span>的相关基础，具备快速上手和实践的潜力，这是你的基础优势
+                </div>
+                <textarea id="exp1Content" placeholder="系统会自动把你的经历和能力匹配，形成画像支撑"></textarea>
+            </div>
+
+            <div class="fill-group" id="exp2Group">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>能力2佐证：我的<span id="a2Text">核心能力2</span>，体现在这些事上</h3>
+                    <button type="button" onclick="removeExpGroup('exp2')" style="background: #f5222d; color: white; border: none; border-radius: 4px; padding: 4px 8px; font-size: 12px; cursor: pointer;">删除</button>
+                </div>
+                <select id="exp2Type" onchange="toggleExpInput('exp2')">
+                    <option value="有经历">我有真实经历佐证这个能力</option>
+                    <option value="无经历">我暂时没相关经历（系统帮我梳理基础能力）</option>
+                </select>
+                <input type="text" id="exp2Scene" placeholder="场景（如：自学Excel/校园超市兼职/社团活动/课程小组作业/线上兼职）">
+                <input type="text" id="exp2Action" placeholder="做了什么（如：每天1小时学网课/高峰期认真收银/组织社团招新/带领小组完成项目/远程协助客户服务）">
+                <input type="text" id="exp2Result" placeholder="小结果（如：学会VLOOKUP/收银零差错/招新人数创新高/项目获得优秀评价/客户满意度提升）">
+                <div class="tip-success" id="exp2Auto" style="display: none;">
+                    ✨ 你的能力基础：在日常学习/生活中，你始终以<span id="a2Auto">核心能力2</span>的态度做事，具备该能力的基础素养，这是你的软优势
+                </div>
+                <textarea id="exp2Content" placeholder="系统会自动把你的经历和能力匹配，形成画像支撑"></textarea>
+            </div>
+
+            <div class="fill-group" id="exp3Group">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>能力3佐证：我的<span id="a3Text">核心能力3</span>，体现在这些事上</h3>
+                    <button type="button" onclick="removeExpGroup('exp3')" style="background: #f5222d; color: white; border: none; border-radius: 4px; padding: 4px 8px; font-size: 12px; cursor: pointer;">删除</button>
+                </div>
+                <select id="exp3Type" onchange="toggleExpInput('exp3')">
+                    <option value="有经历">我有真实经历佐证这个能力</option>
+                    <option value="无经历">我暂时没相关经历（系统帮我梳理基础能力）</option>
+                </select>
+                <input type="text" id="exp3Scene" placeholder="场景（如：小组作业/社团活动组织/志愿者活动/课程设计/校园比赛）">
+                <input type="text" id="exp3Action" placeholder="做了什么（如：和同学分工配合/组织社团报名/参与社区服务/完成课程设计/准备比赛项目）">
+                <input type="text" id="exp3Result" placeholder="小结果（如：按时完成作业/报名无遗漏/获得志愿服务证书/设计作品获奖/比赛进入决赛）">
+                <div class="tip-success" id="exp3Auto" style="display: none;">
+                    ✨ 你的能力基础：在校期间通过日常事务，你慢慢锻炼了<span id="a3Auto">核心能力3</span>，愿意在工作中持续提升这个能力
+                </div>
+                <textarea id="exp3Content" placeholder="系统会自动把你的经历和能力匹配，形成画像支撑"></textarea>
+            </div>
+
+            <button class="btn btn-generate" onclick="generateAllExp()">🔘 一键匹配：我的能力+经历</button>
+            <button class="btn btn-next" onclick="goToStep(1)">← 返回上一步</button>
+            <button class="btn btn-next" onclick="checkStep2()">完成能力-经历匹配 → 下一步</button>
+        </div>
+    </div>
+
+    <!-- 第三步：画像多场景落地（核心：把画像应用到求职场景，简历只是其中一个，非全部） -->
+    <div class="step" id="step3">
+        <div class="card">
+            <h2>🔹 第三步：我的人才画像 → 求职多场景落地</h2>
+            <p style="font-size: 14px; color: #4e5969; margin-bottom: 10px;">把你的专属人才画像，直接用到求职的各个场景，不用重复准备</p>
+            <div class="guide-light">
+                💡 轻量思考：所有话术都基于你的人才画像生成，不用重新编，保证“你是谁”和“你怎么说”一致，HR会觉得你很真实
+            </div>
+
+            <!-- 场景1：面试30秒自我介绍（画像落地） -->
+            <h3>落地场景1：面试30秒自我介绍 <span class="portrait-tag">画像落地</span></h3>
+            <select id="introSelect" onchange="syncCustom('introSelect', 'introCustom')">
+                <option value="">↓ 选一个贴合你画像的模板 ↓</option>
+                <option value="面试官您好，我是{name}，{school}{major}应届生，我的求职方向是{targetJob}，核心优势是{ability1}、{ability2}和{ability3}，希望能从基础岗位做起，发挥自己的优势。">模板1：简洁画像版（突出核心标签）</option>
+                <option value="面试官您好，我是{name}，想做{targetJob}这个岗位，我有{ability1}的基础能力，同时{ability2}、{ability3}是我的做事风格，虽然实战经验不多，但我愿意踏实学习，把优势发挥在工作中。">模板2：真诚画像版（突出真实自我）</option>
+                <option value="自定义">基于我的画像，自己写一句</option>
+            </select>
+            <textarea id="introCustom" placeholder="比如：面试官您好，我是李飞，想做Python开发，我会基础代码编写，学习快又有责任心，希望踏实做基础开发工作" style="display: none;"></textarea>
+            <button class="btn btn-generate" onclick="generateIntro()">🔘 一键生成：我的画像版自我介绍</button>
+            <textarea id="selfIntro" placeholder="你的画像版自我介绍会显示在这里"></textarea>
+
+            <!-- 场景2：面试「为什么应聘这个岗位」（画像落地） -->
+            <h3>落地场景2：面试「为什么应聘这个岗位」 <span class="portrait-tag">画像落地</span></h3>
+            <select id="reasonSelect" onchange="syncCustom('reasonSelect', 'reasonCustom')">
+                <option value="">↓ 选一个贴合你画像的模板 ↓</option>
+                <option value="我求职的方向就是{targetJob}，我的{ability1}能力和岗位对口，同时{ability2}、{ability3}的做事风格也贴合岗位需求，想把我的优势用在工作中。">模板1：能力匹配版（突出画像与岗位契合）</option>
+                <option value="我想做{targetJob}的核心动机是{motivation}，而贵公司的岗位正好能让我发挥{ability1}、{ability2}的优势，这和我的人才画像高度契合。">模板2：动机匹配版（突出画像与求职初衷契合）</option>
+                <option value="自定义">基于我的画像，自己写一句</option>
+            </select>
+            <textarea id="reasonCustom" placeholder="比如：我想做Python开发，因为我喜欢敲代码又能快速学习，贵公司的基础开发岗位正好能让我发挥这些优势" style="display: none;"></textarea>
+            <button class="btn btn-generate" onclick="generateReason()">🔘 一键生成：我的画像版求职理由</button>
+            <textarea id="jobReason" placeholder="你的画像版求职理由会显示在这里"></textarea>
+
+            <!-- 场景3：网申/简历自我评价（画像落地） -->
+            <h3>落地场景3：网申/简历自我评价 <span class="portrait-tag">画像落地</span></h3>
+            <div class="guide-light">
+                💡 这是你的人才画像在简历中的浓缩，不用额外写，基于画像生成即可
+            </div>
+            <button class="btn btn-generate" onclick="generateEval()">🔘 一键生成：我的画像版自我评价</button>
+            <textarea id="resumeEval" placeholder="你的画像版自我评价会显示在这里"></textarea>
+
+            <button class="btn btn-next" onclick="goToStep(2)">← 返回上一步</button>
+            <button class="btn btn-next" onclick="goToStep(4)">完成画像落地 → 导出我的画像</button>
+        </div>
+    </div>
+
+    <!-- 第四步：核心成果-人才画像导出 + 衍生成果-简历生成（彻底纠正本末倒置，画像为核心成果） -->
+    <div class="step" id="step4">
+        <div class="card">
+            <h2>🔹 第四步：我的专属人才画像（核心成果）+ 简历生成（衍生成果）</h2>
+            <div class="tip-warning">
+                <strong>核心提醒：</strong>「个人人才画像单页」是你本次梳理的核心成果，简历只是画像在求职中的一个落地应用，认清自己才是求职的根本！
+            </div>
+
+            <!-- 核心成果：个人人才画像单页预览（突出画像，这是学生的核心收获） -->
+            <h3>✅ 我的专属个人人才画像（核心成果）</h3>
+            <div class="portrait-preview" id="portraitPreview">
+                <h4>双非应届生个人人才画像单页</h4>
+                <p id="previewBasic"></p>
+                <p style="margin: 8px 0;"><strong>核心求职动机：</strong><span id="previewMotivation"></span></p>
+                <p style="margin: 8px 0;"><strong>核心竞争力（3大能力）：</strong><span id="previewAbility"></span></p>
+                <p style="margin: 8px 0;"><strong>个人专属求职标签：</strong><span id="previewTag"></span></p>
+                <p style="margin: 8px 0;"><strong>能力-经历支撑：</strong><br><span id="previewExp"></span></p>
+                <p style="margin: 8px 0;"><strong>我的求职定位：</strong><span id="previewPosition"></span></p>
+            </div>
+
+            <!-- 核心成果导出：个人人才画像（Word/文本） -->
+            <button class="btn btn-portrait" onclick="exportPortrait()">📄 一键导出我的「个人人才画像单页」（Word版）</button>
+
+            <!-- 衍生成果：基于画像生成简历（非核心，明确标注） -->
+            <h3 style="margin-top: 20px;">📌 衍生成果：基于我的画像生成简历（求职落地应用）</h3>
+            <div class="guide-light">
+                💡 这份简历完全基于你的人才画像生成，所有内容都贴合你的真实情况，可直接二次编辑
+            </div>
+            <button class="btn btn-resume" onclick="exportResume()">📄 基于画像生成我的求职简历（Word版）</button>
+
+            <button class="btn btn-next" onclick="goToStep(3)">← 返回上一步</button>
+        </div>
+    </div>
+
+    <script>
+        // 步骤切换：全程围绕人才画像
+        function goToStep(targetStep) {
+            document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+            document.querySelectorAll('.progress-item').forEach(item => item.classList.remove('active'));
+            document.getElementById(`step${targetStep}`).classList.add('active');
+            document.querySelector(`.progress-item[data-step="${targetStep}"]`).classList.add('active');
+            // 第二步加载能力名称，贴合自我认知
+            if (targetStep === 2) {
+                loadAbilityText();
+            }
+            // 第四步生成人才画像预览（核心成果）
+            if (targetStep === 4) {
+                generatePortraitPreview();
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 修改4：统一自定义输入框触发逻辑，修复能力自定义不显示问题
+        function syncCustom(selectId, inputId) {
+            const select = document.getElementById(selectId);
+            const input = document.getElementById(inputId);
+            // 强制显示自定义输入框（如果选了自定义）
+            if (select.value === "自定义") {
+                input.style.display = "block";
+                input.required = true; // 标记为必填
+            } else {
+                input.style.display = "none";
+                input.required = false;
+            }
+        }
+
+        // 加载能力名称到第二步，让能力-经历匹配更贴合自我认知
+        function loadAbilityText() {
+            const a1 = getRealAbility('ability1');
+            const a2 = getRealAbility('ability2');
+            const a3 = getRealAbility('ability3');
+            document.getElementById('a1Text').innerText = a1 || "核心能力1";
+            document.getElementById('a2Text').innerText = a2 || "核心能力2";
+            document.getElementById('a3Text').innerText = a3 || "核心能力3";
+            document.getElementById('a1Auto').innerText = a1 || "核心能力1";
+            document.getElementById('a2Auto').innerText = a2 || "核心能力2";
+            document.getElementById('a3Auto').innerText = a3 || "核心能力3";
+        }
+
+        // 显示/隐藏经历输入框（无经历兜底，梳理基础能力）
+        function toggleExpInput(expPrefix) {
+            const type = document.getElementById(`${expPrefix}Type`).value;
+            const scene = document.getElementById(`${expPrefix}Scene`);
+            const action = document.getElementById(`${expPrefix}Action`);
+            const result = document.getElementById(`${expPrefix}Result`);
+            const autoBox = document.getElementById(`${expPrefix}Auto`);
+            
+            if (type === "无经历") {
+                scene.style.display = "none";
+                action.style.display = "none";
+                result.style.display = "none";
+                autoBox.style.display = "block";
+            } else {
+                scene.style.display = "block";
+                action.style.display = "block";
+                result.style.display = "block";
+                autoBox.style.display = "none";
+            }
+        }
+
+        // 删除经历模块
+        function removeExpGroup(expPrefix) {
+            // 确认删除
+            if (!confirm("确定要删除这个经历模块吗？删除后数据将不可恢复。")) {
+                return;
+            }
+            
+            // 隐藏该经历模块
+            const group = document.getElementById(`${expPrefix}Group`);
+            if (group) {
+                group.style.display = "none";
+            }
+        }
+
+        // 添加经历模块
+        function addExpGroup() {
+            // 生成唯一ID
+            const expCount = document.querySelectorAll('.fill-group').length + 1;
+            const expPrefix = `exp${expCount}`;
+            
+            // 创建新的经历模块
+            const expGroup = document.createElement('div');
+            expGroup.className = 'fill-group';
+            expGroup.id = `${expPrefix}Group`;
+            
+            // 构建模块内容
+            expGroup.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>能力${expCount}佐证：我的其他能力，体现在这些事上</h3>
+                    <button type="button" onclick="removeExpGroup('${expPrefix}')" style="background: #f5222d; color: white; border: none; border-radius: 4px; padding: 4px 8px; font-size: 12px; cursor: pointer;">删除</button>
+                </div>
+                <select id="${expPrefix}Type" onchange="toggleExpInput('${expPrefix}')">
+                    <option value="有经历">我有真实经历佐证这个能力</option>
+                    <option value="无经历">我暂时没相关经历（系统帮我梳理基础能力）</option>
+                </select>
+                <input type="text" id="${expPrefix}Scene" placeholder="场景（如：Python课程设计/班级数据统计/市场营销策划/会计实习/机械设计项目）">
+                <input type="text" id="${expPrefix}Action" placeholder="做了什么（如：自学框架写代码/整理班级考勤数据/策划校园活动/参与财务报表编制/设计机械零件）">
+                <input type="text" id="${expPrefix}Result" placeholder="小结果（如：完成基础功能/数据零错误/活动参与人数超预期/报表审核通过/零件设计符合要求）">
+                <div class="tip-success" id="${expPrefix}Auto" style="display: none;">
+                    ✨ 你的能力基础：在校期间通过课程学习掌握了相关基础，具备快速上手和实践的潜力，这是你的基础优势
+                </div>
+                <textarea id="${expPrefix}Content" placeholder="系统会自动把你的经历和能力匹配，形成画像支撑"></textarea>
+            `;
+            
+            // 找到所有经历模块，在最后一个经历模块之后插入新模块
+            const fillGroups = document.querySelectorAll('.fill-group');
+            const addButton = document.querySelector('button[onclick="addExpGroup()"]');
+            
+            if (fillGroups.length > 0) {
+                // 在最后一个经历模块之后插入
+                const lastGroup = fillGroups[fillGroups.length - 1];
+                lastGroup.parentNode.insertBefore(expGroup, lastGroup.nextSibling);
+            } else {
+                // 如果没有经历模块，在添加按钮之后插入
+                addButton.parentNode.insertBefore(expGroup, addButton.nextSibling);
+            }
+        }
+
+        // 获取真实能力值（处理自定义）
+        function getRealAbility(abilityId) {
+            const selectVal = document.getElementById(abilityId).value;
+            if (selectVal === "自定义") {
+                // 修复：自定义能力必须返回填写的内容，无内容则提示
+                const customVal = document.getElementById(`${abilityId}Custom`).value.trim();
+                return customVal || "未填写能力（请补充你的专属能力）";
+            }
+            return selectVal || "未填写能力";
+        }
+
+        // 检查能力关键词是否重复（基于真实能力值）
+        function checkAbilityRepeat() {
+            const a1 = getRealAbility('ability1');
+            const a2 = getRealAbility('ability2');
+            const a3 = getRealAbility('ability3');
+            const tip = document.getElementById("abilityTip");
+            const repeat = (a2 && a3 && a2 === a3) || (a1 && a2 && a1 === a2) || (a1 && a3 && a1 === a3);
+            tip.style.display = repeat ? "block" : "none";
+        }
+
+        // 修改5：生成人才标签时去除所有省略号，展示完整正文
+        function generateTagSummary() {
+            const name = document.getElementById("name").value || "XXX";
+            const major = document.getElementById("major").value || "XX专业";
+            const targetJob = document.getElementById("targetJob").value || "XX求职方向";
+            const a1 = getRealAbility('ability1');
+            const a2 = getRealAbility('ability2');
+            const a3 = getRealAbility('ability3');
+            // 修复：优先使用自定义输入框的内容
+            const motivationSelect = document.getElementById("motivationSelect").value;
+            const motivationCustom = document.getElementById("motivationCustom").value;
+            let motivation = "想在目标领域踏实积累，发挥自身优势";
+            if (motivationSelect === "自定义" && motivationCustom) {
+                motivation = motivationCustom;
+            } else if (motivationSelect) {
+                motivation = motivationSelect;
+            }
+            
+            // 移除所有省略号，展示完整动机
+            const tag = `${major}应届生，聚焦${targetJob}求职方向，以「${motivation}」为求职初衷，具备${a1}、${a2}、${a3}三大核心能力，做事踏实，愿意从基础岗位做起，持续积累成长。`;
+            document.getElementById("tagSummary").value = tag;
+            document.getElementById("tagTip").style.display = "none";
+        }
+
+        // 修改6：生成能力-经历匹配时去除省略号，展示完整内容；且允许1-3个经历
+        function generateAllExp() {
+            // 处理所有可见的经历模块，包括动态添加的
+            const fillGroups = document.querySelectorAll('.fill-group');
+            fillGroups.forEach((group, index) => {
+                if (group.style.display !== 'none') {
+                    const expPrefix = group.id.replace('Group', ''); // 从ID中提取exp前缀
+                    // 对于前三个模块，使用对应的能力
+                    let ability = "其他能力";
+                    if (index === 0) ability = getRealAbility('ability1');
+                    else if (index === 1) ability = getRealAbility('ability2');
+                    else if (index === 2) ability = getRealAbility('ability3');
+                    generateExp(expPrefix, ability);
+                }
+            });
+        }
+        function generateExp(expPrefix, ability) {
+            const type = document.getElementById(`${expPrefix}Type`).value;
+            if (type === "无经历") {
+                // 优化兜底文案，更贴合双非学生
+                document.getElementById(`${expPrefix}Content`).value = `作为双非应届生，我虽暂无直接的实战经历佐证${ability}能力，但在校期间通过课程学习/日常事务掌握了该能力的基础，具备强烈的学习意愿和实践潜力，这是我自身的核心优势之一。`;
+                return;
+            }
+            const scene = document.getElementById(`${expPrefix}Scene`).value || "日常学习/校园实践";
+            const action = document.getElementById(`${expPrefix}Action`).value || "主动参与/认真完成相关任务";
+            const result = document.getElementById(`${expPrefix}Result`).value || "达成基础目标/掌握相关技能，体现自身能力";
+            // 移除所有省略号，展示完整经历
+            document.getElementById(`${expPrefix}Content`).value = `在${scene}中，通过${action}，${result}，切实体现了我的${ability}能力，这是我真实拥有的核心优势。`;
+        }
+
+        // 生成画像版自我介绍（基于画像，非凭空编造，无省略号）
+        function generateIntro() {
+            const selectVal = document.getElementById("introSelect").value;
+            const customVal = document.getElementById("introCustom").value;
+            const name = document.getElementById("name").value || "XXX";
+            const school = document.getElementById("school").value || "XX大学";
+            const major = document.getElementById("major").value || "XX专业";
+            const targetJob = document.getElementById("targetJob").value || "XX求职方向";
+            const a1 = getRealAbility('ability1');
+            const a2 = getRealAbility('ability2');
+            const a3 = getRealAbility('ability3');
+
+            let intro = "";
+            if (selectVal === "自定义" && customVal) {
+                intro = customVal;
+            } else if (selectVal) {
+                intro = selectVal.replace("{name}", name)
+                                .replace("{school}", school)
+                                .replace("{major}", major)
+                                .replace("{targetJob}", targetJob)
+                                .replace("{ability1}", a1)
+                                .replace("{ability2}", a2)
+                                .replace("{ability3}", a3);
+            } else {
+                intro = `面试官您好，我是${name}，${school}${major}应届生，求职方向是${targetJob}，我具备${a1}、${a2}和${a3}能力，希望能从基础岗位做起，把我的优势发挥在工作中，踏实积累成长。`;
+            }
+            document.getElementById("selfIntro").value = intro;
+        }
+
+        // 生成画像版求职理由（基于画像，贴合真实自我，无省略号）
+        function generateReason() {
+            const selectVal = document.getElementById("reasonSelect").value;
+            const customVal = document.getElementById("reasonCustom").value;
+            const targetJob = document.getElementById("targetJob").value || "XX求职方向";
+            const a1 = getRealAbility('ability1');
+            const a2 = getRealAbility('ability2');
+            const a3 = getRealAbility('ability3');
+            // 修复：优先使用自定义输入框的内容
+            const motivationSelect = document.getElementById("motivationSelect").value;
+            const motivationCustom = document.getElementById("motivationCustom").value;
+            let motivation = "踏实积累，发挥自身优势";
+            if (motivationSelect === "自定义" && motivationCustom) {
+                motivation = motivationCustom;
+            } else if (motivationSelect) {
+                motivation = motivationSelect;
+            }
+
+            let reason = "";
+            if (selectVal === "自定义" && customVal) {
+                reason = customVal;
+            } else if (selectVal) {
+                reason = selectVal.replace("{targetJob}", targetJob)
+                                .replace("{ability1}", a1)
+                                .replace("{ability2}", a2)
+                                .replace("{ability3}", a3)
+                                .replace("{motivation}", motivation);
+            } else {
+                reason = `我的核心求职方向是${targetJob}，求职动机是${motivation}，而我的${a1}、${a2}能力和这个岗位高度契合，想把自己的优势用在实际工作中，和企业一起成长。`;
+            }
+            document.getElementById("jobReason").value = reason;
+        }
+
+        // 生成画像版自我评价（简历落地，基于画像，无省略号）
+        function generateEval() {
+            const major = document.getElementById("major").value || "XX专业";
+            const targetJob = document.getElementById("targetJob").value || "XX求职方向";
+            const a1 = getRealAbility('ability1');
+            const a2 = getRealAbility('ability2');
+            const a3 = getRealAbility('ability3');
+            const tag = document.getElementById("tagSummary").value || "聚焦目标求职方向，具备核心能力，做事踏实，愿意从基础做起";
+
+            // 移除省略号，展示完整标签
+            const evalContent = `${major}应届生，聚焦${targetJob}求职方向，具备${a1}、${a2}、${a3}三大核心能力，${tag} 无过多实战经验，但学习态度端正，愿意将自身优势落地到工作中，从基础岗位踏实积累，持续提升自己。`;
+            document.getElementById("resumeEval").value = evalContent;
+        }
+
+        // 第一步验证（防敷衍，引导真实自我认知）
+        function checkStep1() {
+            let isValid = true;
+            // 基础信息验证
+            if (!document.getElementById("name").value) {
+                alert("请填写你的姓名，这是自我认知的基础～");
+                isValid = false;
+            } else if (!document.getElementById("targetJob").value) {
+                alert("请填写你的求职方向，先找准方向，再梳理画像～");
+                isValid = false;
+            }
+            // 求职动机验证（防无意义表述）
+            const motivation = document.getElementById("motivationSelect").value || document.getElementById("motivationCustom").value;
+            if (motivation.includes("为了找工作") || motivation.includes("随便找") || !motivation) {
+                document.getElementById("motivationTip").style.display = "block";
+                isValid = false;
+            } else {
+                document.getElementById("motivationTip").style.display = "none";
+            }
+            // 人才标签验证（防自我否定）
+            const tag = document.getElementById("tagSummary").value;
+            if (tag.includes("没优点") || tag.includes("什么都不会") || !tag) {
+                document.getElementById("tagTip").style.display = "block";
+                isValid = false;
+            } else {
+                document.getElementById("tagTip").style.display = "none";
+            }
+            // 能力重复验证
+            checkAbilityRepeat();
+            if (document.getElementById("abilityTip").style.display === "block") {
+                isValid = false;
+            }
+            // 验证通过进入下一步
+            if (isValid) goToStep(2);
+        }
+
+        // 修改7：第二步验证逻辑，允许1-3个经历（至少1个）
+        function checkStep2() {
+            // 统计已填写的经历数量
+            let filledExpCount = 0;
+            
+            // 检查所有可见的经历模块，包括动态添加的
+            const fillGroups = document.querySelectorAll('.fill-group');
+            fillGroups.forEach((group, index) => {
+                if (group.style.display !== 'none') {
+                    const expContent = document.getElementById(`exp${index + 1}Content`);
+                    if (expContent) {
+                        const expVal = expContent.value.trim();
+                        if (expVal) filledExpCount++;
+                    }
+                }
+            });
+
+            // 至少填写1个经历
+            if (filledExpCount === 0) {
+                alert("请至少填写/生成1个能力对应的经历哦～不用多，真实的1个就够了！");
+                return;
+            }
+
+            // 验证通过进入下一步
+            goToStep(3);
+        }
+
+        // 修改8：生成画像预览时去除所有省略号，展示完整内容
+        function generatePortraitPreview() {
+            // 基础信息
+            const name = document.getElementById("name").value || "XXX";
+            const school = document.getElementById("school").value || "XX大学";
+            const major = document.getElementById("major").value || "XX专业";
+            const targetJob = document.getElementById("targetJob").value || "XX求职方向";
+            // 核心画像维度
+            // 修复：优先使用自定义输入框的内容
+            const motivationSelect = document.getElementById("motivationSelect").value;
+            const motivationCustom = document.getElementById("motivationCustom").value;
+            let motivation = "想在目标领域踏实积累，发挥自身优势";
+            if (motivationSelect === "自定义" && motivationCustom) {
+                motivation = motivationCustom;
+            } else if (motivationSelect) {
+                motivation = motivationSelect;
+            }
+            const a1 = getRealAbility('ability1');
+            const a2 = getRealAbility('ability2');
+            const a3 = getRealAbility('ability3');
+            const tag = document.getElementById("tagSummary").value || "聚焦目标求职方向，具备核心能力，做事踏实，愿意从基础做起";
+            // 能力-经历支撑（完整展示，无省略号）
+            let expList = [];
+            // 处理所有可见的经历模块，包括动态添加的
+            const fillGroups = document.querySelectorAll('.fill-group');
+            fillGroups.forEach((group, index) => {
+                if (group.style.display !== 'none') {
+                    const expContent = document.getElementById(`exp${index + 1}Content`);
+                    if (expContent) {
+                        let exp = expContent.value;
+                        if (!exp) {
+                            // 为动态添加的模块提供默认值
+                            exp = `具备相关能力的基础能力，有实践潜力。`;
+                        }
+                        expList.push(exp);
+                    }
+                }
+            });
+            // 求职定位（基于画像的自我定位，无省略号）
+            const position = `聚焦${targetJob}基础岗位，以${a1}为核心硬能力，${a2}、${a3}为核心软能力，踏实积累，逐步提升，不眼高手低，匹配企业基础岗位需求。`;
+
+            // 渲染画像预览（核心成果，完整无省略号）
+            document.getElementById("previewBasic").innerHTML = `<strong>基本信息：</strong>${name} | ${school}${major}应届生 | 求职方向：${targetJob}`;
+            document.getElementById("previewMotivation").innerText = motivation;
+            document.getElementById("previewAbility").innerText = `${a1}、${a2}、${a3}`;
+            document.getElementById("previewTag").innerText = tag;
+            // 完整展示经历，不截断
+            document.getElementById("previewExp").innerText = expList.map((exp, index) => `${index + 1}. ${exp}`).join(' ');
+            document.getElementById("previewPosition").innerText = position;
+        }
+
+
+
+        // 保存进度功能
+        function saveProgress() {
+            // 收集所有表单数据
+            const progressData = {
+                // 基础信息
+                name: document.getElementById('name').value,
+                school: document.getElementById('school').value,
+                major: document.getElementById('major').value,
+                targetJob: document.getElementById('targetJob').value,
+                // 求职动机
+                motivationSelect: document.getElementById('motivationSelect').value,
+                motivationCustom: document.getElementById('motivationCustom').value,
+                // 核心能力
+                ability1: document.getElementById('ability1').value,
+                ability1Custom: document.getElementById('ability1Custom').value,
+                ability2: document.getElementById('ability2').value,
+                ability2Custom: document.getElementById('ability2Custom').value,
+                ability3: document.getElementById('ability3').value,
+                ability3Custom: document.getElementById('ability3Custom').value,
+                // 人才标签
+                tagSummary: document.getElementById('tagSummary').value,
+                // 经历信息（包括动态添加的）
+                experiences: [],
+                // 面试场景
+                introSelect: document.getElementById('introSelect').value,
+                introCustom: document.getElementById('introCustom').value,
+                selfIntro: document.getElementById('selfIntro').value,
+                reasonSelect: document.getElementById('reasonSelect').value,
+                reasonCustom: document.getElementById('reasonCustom').value,
+                jobReason: document.getElementById('jobReason').value,
+                resumeEval: document.getElementById('resumeEval').value
+            };
+            
+            // 收集所有经历模块的数据，包括动态添加的
+            const fillGroups = document.querySelectorAll('.fill-group');
+            fillGroups.forEach((group, index) => {
+                const expPrefix = `exp${index + 1}`;
+                const expType = document.getElementById(`${expPrefix}Type`);
+                const expScene = document.getElementById(`${expPrefix}Scene`);
+                const expAction = document.getElementById(`${expPrefix}Action`);
+                const expResult = document.getElementById(`${expPrefix}Result`);
+                const expContent = document.getElementById(`${expPrefix}Content`);
+                
+                if (expType) {
+                    progressData.experiences.push({
+                        prefix: expPrefix,
+                        type: expType.value,
+                        scene: expScene ? expScene.value : '',
+                        action: expAction ? expAction.value : '',
+                        result: expResult ? expResult.value : '',
+                        content: expContent ? expContent.value : '',
+                        display: group.style.display
+                    });
+                }
+            });
+            
+            // 保存到localStorage
+            localStorage.setItem('talentPortraitProgress', JSON.stringify(progressData));
+            alert('✅ 进度保存成功！下次打开页面时可以恢复填写进度。');
+        }
+
+        // 恢复进度功能
+        function loadProgress() {
+            // 从localStorage读取数据
+            const savedData = localStorage.getItem('talentPortraitProgress');
+            if (!savedData) {
+                alert('❌ 没有找到保存的进度！');
+                return;
+            }
+            
+            // 解析数据
+            const progressData = JSON.parse(savedData);
+            
+            // 恢复基础信息
+            document.getElementById('name').value = progressData.name || '';
+            document.getElementById('school').value = progressData.school || '';
+            document.getElementById('major').value = progressData.major || '';
+            document.getElementById('targetJob').value = progressData.targetJob || '';
+            
+            // 恢复求职动机
+            document.getElementById('motivationSelect').value = progressData.motivationSelect || '';
+            document.getElementById('motivationCustom').value = progressData.motivationCustom || '';
+            // 触发自定义输入框显示
+            syncCustom('motivationSelect', 'motivationCustom');
+            
+            // 恢复核心能力
+            document.getElementById('ability1').value = progressData.ability1 || '';
+            document.getElementById('ability1Custom').value = progressData.ability1Custom || '';
+            document.getElementById('ability2').value = progressData.ability2 || '';
+            document.getElementById('ability2Custom').value = progressData.ability2Custom || '';
+            document.getElementById('ability3').value = progressData.ability3 || '';
+            document.getElementById('ability3Custom').value = progressData.ability3Custom || '';
+            // 触发自定义输入框显示
+            syncCustom('ability1', 'ability1Custom');
+            syncCustom('ability2', 'ability2Custom');
+            syncCustom('ability3', 'ability3Custom');
+            // 检查能力重复
+            checkAbilityRepeat();
+            
+            // 恢复人才标签
+            document.getElementById('tagSummary').value = progressData.tagSummary || '';
+            
+            // 恢复经历信息（包括动态添加的）
+            if (progressData.experiences && progressData.experiences.length > 0) {
+                // 先恢复默认的三个经历模块
+                if (progressData.experiences.length >= 1) {
+                    const exp1 = progressData.experiences[0];
+                    document.getElementById('exp1Type').value = exp1.type || '有经历';
+                    document.getElementById('exp1Scene').value = exp1.scene || '';
+                    document.getElementById('exp1Action').value = exp1.action || '';
+                    document.getElementById('exp1Result').value = exp1.result || '';
+                    document.getElementById('exp1Content').value = exp1.content || '';
+                    document.getElementById('exp1Group').style.display = exp1.display || 'block';
+                    // 触发经历输入框显示
+                    toggleExpInput('exp1');
+                }
+                
+                if (progressData.experiences.length >= 2) {
+                    const exp2 = progressData.experiences[1];
+                    document.getElementById('exp2Type').value = exp2.type || '有经历';
+                    document.getElementById('exp2Scene').value = exp2.scene || '';
+                    document.getElementById('exp2Action').value = exp2.action || '';
+                    document.getElementById('exp2Result').value = exp2.result || '';
+                    document.getElementById('exp2Content').value = exp2.content || '';
+                    document.getElementById('exp2Group').style.display = exp2.display || 'block';
+                    // 触发经历输入框显示
+                    toggleExpInput('exp2');
+                }
+                
+                if (progressData.experiences.length >= 3) {
+                    const exp3 = progressData.experiences[2];
+                    document.getElementById('exp3Type').value = exp3.type || '有经历';
+                    document.getElementById('exp3Scene').value = exp3.scene || '';
+                    document.getElementById('exp3Action').value = exp3.action || '';
+                    document.getElementById('exp3Result').value = exp3.result || '';
+                    document.getElementById('exp3Content').value = exp3.content || '';
+                    document.getElementById('exp3Group').style.display = exp3.display || 'block';
+                    // 触发经历输入框显示
+                    toggleExpInput('exp3');
+                }
+                
+                // 恢复动态添加的经历模块
+                for (let i = 3; i < progressData.experiences.length; i++) {
+                    const exp = progressData.experiences[i];
+                    // 添加新的经历模块
+                    addExpGroup();
+                    // 恢复数据
+                    const expPrefix = `exp${i + 1}`;
+                    const expType = document.getElementById(`${expPrefix}Type`);
+                    const expScene = document.getElementById(`${expPrefix}Scene`);
+                    const expAction = document.getElementById(`${expPrefix}Action`);
+                    const expResult = document.getElementById(`${expPrefix}Result`);
+                    const expContent = document.getElementById(`${expPrefix}Content`);
+                    const expGroup = document.getElementById(`${expPrefix}Group`);
+                    
+                    if (expType) expType.value = exp.type || '有经历';
+                    if (expScene) expScene.value = exp.scene || '';
+                    if (expAction) expAction.value = exp.action || '';
+                    if (expResult) expResult.value = exp.result || '';
+                    if (expContent) expContent.value = exp.content || '';
+                    if (expGroup) expGroup.style.display = exp.display || 'block';
+                    // 触发经历输入框显示
+                    toggleExpInput(expPrefix);
+                }
+            } else {
+                // 恢复旧格式的数据
+                document.getElementById('exp1Type').value = progressData.exp1Type || '有经历';
+                document.getElementById('exp1Scene').value = progressData.exp1Scene || '';
+                document.getElementById('exp1Action').value = progressData.exp1Action || '';
+                document.getElementById('exp1Result').value = progressData.exp1Result || '';
+                document.getElementById('exp1Content').value = progressData.exp1Content || '';
+                document.getElementById('exp1Group').style.display = progressData.exp1GroupDisplay || 'block';
+                toggleExpInput('exp1');
+                
+                document.getElementById('exp2Type').value = progressData.exp2Type || '有经历';
+                document.getElementById('exp2Scene').value = progressData.exp2Scene || '';
+                document.getElementById('exp2Action').value = progressData.exp2Action || '';
+                document.getElementById('exp2Result').value = progressData.exp2Result || '';
+                document.getElementById('exp2Content').value = progressData.exp2Content || '';
+                document.getElementById('exp2Group').style.display = progressData.exp2GroupDisplay || 'block';
+                toggleExpInput('exp2');
+                
+                document.getElementById('exp3Type').value = progressData.exp3Type || '有经历';
+                document.getElementById('exp3Scene').value = progressData.exp3Scene || '';
+                document.getElementById('exp3Action').value = progressData.exp3Action || '';
+                document.getElementById('exp3Result').value = progressData.exp3Result || '';
+                document.getElementById('exp3Content').value = progressData.exp3Content || '';
+                document.getElementById('exp3Group').style.display = progressData.exp3GroupDisplay || 'block';
+                toggleExpInput('exp3');
+            }
+            
+            // 恢复面试场景
+            document.getElementById('introSelect').value = progressData.introSelect || '';
+            document.getElementById('introCustom').value = progressData.introCustom || '';
+            document.getElementById('selfIntro').value = progressData.selfIntro || '';
+            // 触发自定义输入框显示
+            syncCustom('introSelect', 'introCustom');
+            
+            document.getElementById('reasonSelect').value = progressData.reasonSelect || '';
+            document.getElementById('reasonCustom').value = progressData.reasonCustom || '';
+            document.getElementById('jobReason').value = progressData.jobReason || '';
+            // 触发自定义输入框显示
+            syncCustom('reasonSelect', 'reasonCustom');
+            
+            document.getElementById('resumeEval').value = progressData.resumeEval || '';
+            
+            alert('✅ 进度恢复成功！');
+        }
+
+        // 清除进度功能
+        function clearProgress() {
+            if (confirm('确定要清除所有保存的进度吗？此操作不可恢复。')) {
+                localStorage.removeItem('talentPortraitProgress');
+                alert('✅ 进度已清除！');
+            }
+        }
+
+        // 修改9：导出画像Word时去除所有省略号，展示完整内容
+        function exportPortrait() {
+            if (!document.getElementById("name").value) {
+                alert("请先完成你的核心画像梳理，再导出～");
+                return;
+            }
+            // 修复：优先使用自定义输入框的内容
+            const motivationSelect = document.getElementById("motivationSelect").value;
+            const motivationCustom = document.getElementById("motivationCustom").value;
+            let motivation = "想在目标领域踏实积累，发挥自身优势";
+            if (motivationSelect === "自定义" && motivationCustom) {
+                motivation = motivationCustom;
+            } else if (motivationSelect) {
+                motivation = motivationSelect;
+            }
+            // 整理画像核心数据
+            const portraitData = {
+                name: document.getElementById("name").value,
+                school: document.getElementById("school").value || "XX大学",
+                major: document.getElementById("major").value || "XX专业",
+                targetJob: document.getElementById("targetJob").value || "XX求职方向",
+                motivation: motivation,
+                a1: getRealAbility('ability1'),
+                a2: getRealAbility('ability2'),
+                a3: getRealAbility('ability3'),
+                tag: document.getElementById("tagSummary").value || "聚焦目标求职方向，具备核心能力，做事踏实，愿意从基础做起",
+                position: `聚焦${document.getElementById("targetJob").value || "XX求职方向"}基础岗位，以${getRealAbility('ability1')}为核心硬能力，${getRealAbility('ability2')}、${getRealAbility('ability3')}为核心软能力，踏实积累，逐步提升，不眼高手低，匹配企业基础岗位需求。`
+            };
+            
+            // 只处理可见的经历模块，包括动态添加的
+            let expContent = "";
+            let expCount = 1;
+            const fillGroups = document.querySelectorAll('.fill-group');
+            fillGroups.forEach((group, index) => {
+                if (group.style.display !== 'none') {
+                    const expContentElem = document.getElementById(`exp${index + 1}Content`);
+                    if (expContentElem) {
+                        let exp = expContentElem.value;
+                        let abilityName = "其他能力";
+                        // 对于前三个模块，使用对应的能力名称
+                        if (index === 0) abilityName = portraitData.a1;
+                        else if (index === 1) abilityName = portraitData.a2;
+                        else if (index === 2) abilityName = portraitData.a3;
+                        
+                        if (!exp) {
+                            exp = `具备${abilityName}的基础能力，有实践潜力。`;
+                        }
+                        expContent += `${expCount}. ${abilityName}能力支撑：${exp}\n`;
+                        expCount++;
+                    }
+                }
+            });
+            
+            // 画像内容排版（核心成果，简洁清晰，无省略号）
+            const portraitText = `
+# 双非应届生个人人才画像单页
+## 一、基本求职盘
+姓名：${portraitData.name}
+学校：${portraitData.school}
+专业：${portraitData.major}
+核心求职方向：${portraitData.targetJob}
+
+## 二、核心画像维度
+1. 核心求职动机：${portraitData.motivation}
+2. 核心竞争力（3大能力）：${portraitData.a1}、${portraitData.a2}、${portraitData.a3}
+3. 个人专属求职标签：${portraitData.tag}
+
+## 三、能力-经历画像支撑
+${expContent}
+## 四、我的求职定位
+${portraitData.position}
+
+### 画像梳理核心结论
+我是一名聚焦${portraitData.targetJob}的${portraitData.major}应届生，具备${portraitData.a1}、${portraitData.a2}、${portraitData.a3}核心能力，做事踏实，愿意从基础岗位做起，我的优势是真实、有潜力，匹配企业基础岗位的招聘需求。
+            `;
+            // 导出画像Word
+            const blob = new Blob([portraitText], { type: 'application/msword;charset=utf-8' });
+            saveAs(blob, `${portraitData.name}-个人人才画像单页.doc`);
+            alert("✅ 你的专属个人人才画像导出成功！这是你求职的核心根本，建议反复查看，认清自己！");
+        }
+
+        // 修改10：导出简历Word时去除所有省略号，展示完整内容
+        function exportResume() {
+            if (!document.getElementById("name").value) {
+                alert("请先完成你的核心画像梳理，再生成简历～");
+                return;
+            }
+            // 简历数据完全基于画像生成，不脱离自我
+            const resumeData = {
+                name: document.getElementById("name").value,
+                school: document.getElementById("school").value || "XX大学",
+                major: document.getElementById("major").value || "XX专业",
+                targetJob: document.getElementById("targetJob").value || "XX求职方向",
+                tag: document.getElementById("tagSummary").value || "聚焦目标求职方向，具备核心能力，做事踏实，愿意从基础做起",
+                a1: getRealAbility('ability1'),
+                a2: getRealAbility('ability2'),
+                a3: getRealAbility('ability3'),
+                selfIntro: document.getElementById("selfIntro").value || `面试官您好，我是${document.getElementById("name").value}，${document.getElementById("school").value || "XX大学"}${document.getElementById("major").value || "XX专业"}应届生，求职方向是${document.getElementById("targetJob").value || "XX求职方向"}，具备${getRealAbility('ability1')}、${getRealAbility('ability2')}和${getRealAbility('ability3')}能力，希望能从基础岗位做起，踏实积累成长。`,
+                resumeEval: document.getElementById("resumeEval").value || `${document.getElementById("major").value || "XX专业"}应届生，聚焦${document.getElementById("targetJob").value || "XX求职方向"}求职方向，具备${getRealAbility('ability1')}、${getRealAbility('ability2')}、${getRealAbility('ability3')}三大核心能力，做事踏实，学习态度端正，愿意从基础岗位做起，将自身优势落地到工作中，持续提升自己。`
+            };
+            
+            // 只处理可见的经历模块，包括动态添加的
+            let abilityContent = "";
+            let expContent = "";
+            let expCount = 1;
+            const fillGroups = document.querySelectorAll('.fill-group');
+            fillGroups.forEach((group, index) => {
+                if (group.style.display !== 'none') {
+                    const expContentElem = document.getElementById(`exp${index + 1}Content`);
+                    if (expContentElem) {
+                        let exp = expContentElem.value;
+                        let abilityName = "其他能力";
+                        // 对于前三个模块，使用对应的能力名称
+                        if (index === 0) abilityName = resumeData.a1;
+                        else if (index === 1) abilityName = resumeData.a2;
+                        else if (index === 2) abilityName = resumeData.a3;
+                        
+                        if (!exp) {
+                            exp = `具备${abilityName}的基础能力，有实践潜力。`;
+                        }
+                        abilityContent += `${expCount}. ${abilityName}：${exp}\n`;
+                        expContent += `${expCount}. ${exp}\n`;
+                        expCount++;
+                    }
+                }
+            });
+            
+            // 简历内容排版（基于画像，简洁实用，可二次编辑，无省略号）
+            const resumeText = `
+个人简历
+姓名：${resumeData.name}
+学校：${resumeData.school}
+专业：${resumeData.major}
+求职意向：${resumeData.targetJob}
+
+一、个人核心标签
+${resumeData.tag}
+
+二、核心能力
+${abilityContent}
+三、校园经历/能力体现
+${expContent}
+四、自我评价
+${resumeData.resumeEval}
+
+五、面试30秒自我介绍（基于个人画像）
+${resumeData.selfIntro}
+            `;
+            // 导出简历Word
+            const blob = new Blob([resumeText], { type: 'application/msword;charset=utf-8' });
+            saveAs(blob, `${resumeData.name}-${resumeData.targetJob}-画像版求职简历.doc`);
+            alert("📌 基于你的人才画像生成简历成功！这份简历完全贴合你的真实情况，可直接在Word中二次编辑～");
+        }
+    </script>
+</body>
+</html>
